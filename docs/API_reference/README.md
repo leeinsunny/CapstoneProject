@@ -17,3 +17,15 @@ Every sample output should be written in comments under input
 # output:
 # sample output
 ```
+
+### 4. Virtual Environment
+__Setting up virtual environment:__
+1. Create virtual environment under /API_reference:  
+`% python3 -m venv .venv`  
+2. Activate virtual environment:  
+`% source .venv/bin/activate`
+3. Upgrade Pip:  
+`(.venv) % pip install --upgrade pip`
+4. Necessary package:
+<!-- `(.venv) % pip install py-hanspell` -->
+<!-- TODO: update package installation commend here -->
