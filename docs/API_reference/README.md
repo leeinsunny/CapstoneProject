@@ -6,16 +6,18 @@
 - Every file should contain _main_ function to run sample usage.
 
 ### 2. Input
-Regarding text data as an input for using each API, use following sentences for API verification:  
-``` python
-input = "example sentence"
+Regarding text data as an input for using each API, use following convention using **arguments** for API verification:  
+``` shell
+python {api_test_file} --input {input text}
 ```
 
 ### 3. Output
-Every sample output should be written in comments under input
-``` python
-# output:
-# sample output
+Every sample output should be tested through running apiRuns.sh file: `bash apiRuns.sh`
+``` bash
+function {api_name} {
+    apiRet=`python {api_test_file} --input {input text}`
+    echo "api result: ${apiRet}"
+}
 ```
 
 ### 4. Virtual Environment
@@ -26,6 +28,8 @@ __Setting up virtual environment:__
 `% source .venv/bin/activate`
 3. Upgrade Pip:  
 `(.venv) % pip install --upgrade pip`
-4. Necessary package:
+4. Necessary package:  
+    - Slang API(google perspective API)
+        - `(.venv) % pip install google-api-python-client`
 <!-- `(.venv) % pip install py-hanspell` -->
 <!-- TODO: update package installation commend here -->
