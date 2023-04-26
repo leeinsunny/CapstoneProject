@@ -1,51 +1,57 @@
 # CapstoneProject
 
-### 📮 DocumentHTML based Electronic Document Handling System
-  DocumentHTML 기반의 전자문서 처리 시스템  
+### Smart Cloud Storage
 
+텍스트 정제 도구를 활용한 클라우드 저장소
 
 <br/>
 
 ## Description
-### 📝 Research Summary  
-Establish an electronic document handling system by utilizing DocumentHTML  
-\* `DocumentHTML`: documents that compensates for the shortcomings of HTML and PDF-type documents as electronic documents    
 
-### 📍 Goal  
-Developing PKI-based anti-forgery and verification functions and ensuring readability and convenience in the mobile environment
+### 📍 Goal
+
+Using **text purification tools** to process files uploaded to **cloud repositories**, automatically categorize and summarize documents.  
+It will help users find and manage documents more efficiently.
+
+<br/>
+
+### 📝 Research Summary with Key Functions
+
+- Refine text in the uploaded file.
+  - Mischaracter, slang, duplicate, personal information detection
+- Store refined files in cloud storage.
+  - Extracting keywords and summarizing by document
+  - Classifying documents by keyword search
 
 <br/>
 
 ## Research Plan
-- 반응형 웹 개발
-- Cloud 서버 구축
-- HTML, DocumentHTML의 태그 분석 및 변환 알고리즘 구현
-- Rest API 통신을 통한 전자문서 변환 및 송부 시스템 구현
-- Hash Function을 활용한 위변조 방지/검증 알고리즘 구현
-- ~~Database 구축 및 이력관리 서비스~~
-- CRUD(Create, Read, Update, Delete) 기능
+
+- Develop text purification tool
+- Develop keyword extraction and document summary tools
+- Develop Responsive Web
+- Build Cloud Server
 
 <br/>
 
+<br/>
 
 ## Development Plan
-### Languages  
+
+### Languages
+
 <div>
-<!--   <img src="https://img.shields.io/badge/Python-FFCA28?style=flat-square&logo=Python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/C++-004482?style=flat-square&logo=cplusplus&logoColor=white"/> -->
-  <img src="https://img.shields.io/badge/html-F2622E?style=flat-square&logo=html5&logoColor=white"/>
-  
+    <img src="https://img.shields.io/badge/Python-FFFFFF?style=flat-square&logo=python&logoColor=blue">
+    <img src="https://img.shields.io/badge/React-262626?style=flat-square&logo=React&logoColor=07C4D9"/>
+    <img src="https://img.shields.io/badge/Django-C9EEFF?style=flat-square&logo=django&logoColor=07C4D9">
+
 </div>
 
-### Related Libraries  
-<div>
-  -
-<!--   <img src="https://img.shields.io/badge/openCV-5C3EE8?style=flat-square&logo=openCV&logoColor=white"/>
-  <img src="https://img.shields.io/badge/dlib-008000?style=flat-square&logo=dlib&logoColor=white"/> -->
-</div>
+<br/>
 
+### Related Libraries
 
-### Related AI Model  
-<div>
-  -
-</div>
+- ~~`py-hanspell`~~
+- `perspective API` from google
+
+ <br/>
