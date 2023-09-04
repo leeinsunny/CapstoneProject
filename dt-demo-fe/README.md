@@ -25,4 +25,11 @@ npm install -g npm
 ```bash
 npm install react-router-dom
 npm install styled-components@5.3.10
+npm install react-icons --save
+```
+
+### 3. Start server
+
+```bash
+npm start
 ```
