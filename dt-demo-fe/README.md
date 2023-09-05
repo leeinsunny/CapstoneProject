@@ -26,6 +26,8 @@ npm install -g npm
 npm install react-router-dom
 npm install styled-components@5.3.10
 npm install react-icons --save
+npm install axios
+npm install http-proxy-middleware
 ```
 
 ### 3. Start server
