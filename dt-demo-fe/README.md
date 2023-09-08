@@ -28,6 +28,7 @@ npm install styled-components@5.3.10
 npm install react-icons --save
 npm install axios
 npm install http-proxy-middleware
+npm install @emotion/react
 ```
 
 ### 3. Start server
