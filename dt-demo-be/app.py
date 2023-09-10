@@ -25,10 +25,10 @@ def filter():
         )
         sampleArgs2 = modules.argparse.Namespace(
             all=None,  
-            modules="typo,slang",
+            modules="dup",
             input="demo.txt"  
         )
-        args = sampleArgs2
+        args = sampleArgs1
         app.logger.info(f"arguments: all={args.all}, modules={args.modules}, input={args.input}")
         modules.runModule(args)
         return "POST return"
