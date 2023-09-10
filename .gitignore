@@ -1,3 +1,6 @@
+### DB
+database/*.txt
+
 ### react ###
 .DS_*
 *.log
