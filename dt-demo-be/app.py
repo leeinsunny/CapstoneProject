@@ -16,6 +16,7 @@ def filter():
     elif request.method == 'POST':
         app.logger.info("API request on filtering func: POST")
         # Run modules with given input.
+        # Please remain 2 samples until API documentation has done.
         # TODO: handle input files
         sampleArgs1 = modules.argparse.Namespace(
             all=True,  
@@ -24,10 +25,10 @@ def filter():
         )
         sampleArgs2 = modules.argparse.Namespace(
             all=None,  
-            modules="slang,pdd",
+            modules="slang",
             input="demo.txt"  
         )
-        args = sampleArgs1
+        args = sampleArgs2
         app.logger.info(f"arguments: all={args.all}, modules={args.modules}, input={args.input}")
         modules.runModule(args)
         return "POST return"
