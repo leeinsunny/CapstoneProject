@@ -25,7 +25,7 @@ def filter():
         )
         sampleArgs2 = modules.argparse.Namespace(
             all=None,  
-            modules="typo,slang",
+            modules="typo,slang,pdd",
             input="demo.txt"  
         )
         args = sampleArgs2

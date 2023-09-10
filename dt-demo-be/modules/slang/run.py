@@ -25,6 +25,8 @@ def run(fileName):
         for s in slang_dict["slang"]:
           target = target.replace(s, "*"*len(s))
         nf.write(target+'\n')
+    f.close()
+  nf.close()
 
 if __name__ == "__main__":
   run("fake.txt")
