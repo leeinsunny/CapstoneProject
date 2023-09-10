@@ -1,12 +1,28 @@
+import argparse
+import os
+
+# Use following importing commands 
+# when running API
 import modules.slang.run as slang
 import modules.pdd.run as pdd
 import modules.dup.run as dup
 import modules.typo.run as typo
-import argparse
+
+# Use following importing commands 
+# when running /modules/run.py directly(not from API)
+# import slang.run as slang
+# import pdd.run as pdd
+# import dup.run as dup
+# import typo.run as typo
 
 def runModule(args):
     # TODO: update module list info
+    # Typo must run prior to other modules
     module_list = {
+       "typo": {
+          "enabled": False,
+          "module": typo
+       },
        "slang": {
           "enabled": False,
           "module": slang
@@ -18,10 +34,6 @@ def runModule(args):
        "dup": {
           "enabled": False,
           "module": dup
-       },
-       "typo": {
-          "enabled": False,
-          "module": typo
        },
     }
 
@@ -50,11 +62,29 @@ def runModule(args):
             module_list[modules_info]["enabled"] = True
     
     print("input value:", args.input)
-    # slang.run("demo.txt")
+    fileName = args.input
+    
+    filterTimes = 0
     for modules_info in module_list:
        if module_list[modules_info]["enabled"]:
-           print(f"{modules_info} module is enabled.")
-           module_list[modules_info]["module"].run(args.input)
+           print(f">>>>>>> {modules_info} module is enabled.")
+           module_list[modules_info]["module"].run(fileName)
+           fileName = fileName.replace(".txt", "_filtered.txt")
+           filterTimes += 1
+   
+   # Remove unnecessary files.
+   # TODO: would it be better to save whole files?
+    db_dir = os.path.join("..", "database")
+    original_name = args.input.replace(".txt","")
+    for i in range(1,filterTimes,+1):
+        fileNotUsed_name = original_name+"_filtered"*i+".txt"
+        fileNotUsed_dir = os.path.join(db_dir, fileNotUsed_name)
+        os.remove(fileNotUsed_dir)
+    if(filterTimes > 1):
+        last_name = original_name+"_filtered"*filterTimes+".txt"
+        last_dir = os.path.join(db_dir, last_name)
+        final_dir = os.path.join(db_dir, original_name+"_filtered"+".txt")
+        os.rename(last_dir, final_dir)
 
 def main() :
   argparser = argparse.ArgumentParser(
