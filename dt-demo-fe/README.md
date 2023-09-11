@@ -6,13 +6,13 @@
 
 #### 2. Install yarn or npm
 
-- install yarn
+-   install yarn
 
 ```bash
 npm install -g yarn
 ```
 
-- install npm
+-   install npm
 
 ```bash
 npm install -g npm
@@ -29,6 +29,7 @@ npm install react-icons --save
 npm install axios
 npm install http-proxy-middleware
 npm install @emotion/react
+npm install antd
 ```
 
 ### 3. Start server
