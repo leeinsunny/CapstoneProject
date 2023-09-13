@@ -1,5 +1,5 @@
-import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/navbar/index";
 import Home from "./pages/01_home";
 import Filter from "./pages/02_filter";
 import Converter from "./pages/03_converter";

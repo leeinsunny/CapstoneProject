@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import DemoUpload from "./demo/upload";
 import { Outlet } from "react-router-dom";
 
 const Container = styled.div`
     display: flex;
-    justify-content: center;
+    justify-content: start;
     flex-direction: column;
     align-items: center;
     height: 100vh;
@@ -16,6 +15,7 @@ const Filter = () => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
+        // TODO: Match backend connection structure
         const apiUrl = "/filter";
 
         axios
