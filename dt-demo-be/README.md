@@ -3,6 +3,8 @@
 ```bash
 (.venv) CapstoneProject % pip install flask
 (.venv) CapstoneProject % pip install flask-cors
+(.venv) CapstoneProject % pip install requests
+(.venv) CapstoneProject % pip install pandas
 ```
 
 ### 2. Run server
