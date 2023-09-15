@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import modules.run as modules
+import os
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -28,6 +29,32 @@ def filter():
         return "Filtering Requested"
     else:
         return "Unexpected API request"
+
+@app.route("/api/filter/report", methods=["GET"])
+def get_report():
+    template_path = os.path.join("filter_report", "template.html")
+    
+    # TODO: calculate overview_rate according to the file size
+
+    report_data_sample = {
+        'title': "Report",
+        'title_fileName': "demo.txt",
+        'overview_rate': "10%",
+        'overview_typo': 5,
+        'overview_slang': 3,
+        'overview_pdd': 2,
+        'overview_dup': 4,
+        'overview_char': 6,
+        'overview_all': 0,
+        'contents_original_fName': "original.txt",
+        'contents_converted_fName': "converted.txt",
+        'contents_original': "This is the original content.",
+        'contents_converted': "This is the converted content."
+    }
+    # update overview_all
+    report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
+
+    return render_template(template_path, **report_data_sample)
 
 @app.route("/api/converter")
 def converter():

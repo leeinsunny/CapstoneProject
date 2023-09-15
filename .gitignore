@@ -1,6 +1,10 @@
 ### DB
 database/*.txt
 
+### Report styles ###
+dt-demo-be/static/css/
+dt-demo-be/static/js/
+
 ### react ###
 .DS_*
 *.log
