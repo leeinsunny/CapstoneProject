@@ -16,7 +16,7 @@ const ReportBox = styled.div`
     padding: 20px;
 `;
 
-const DemoReport = () => {
+const ReportContainer = () => {
     const handleExportButton = () => {
         console.log("export button clicked");
         alert("export button clicked");
@@ -24,7 +24,7 @@ const DemoReport = () => {
 
     return (
         <Container>
-            <ReportBox>this is DemoReport</ReportBox>
+            <ReportBox>this is ReportContainer</ReportBox>
             <Button
                 style={{
                     marginTop: "30px",
@@ -39,4 +39,4 @@ const DemoReport = () => {
     );
 };
 
-export default DemoReport;
+export default ReportContainer;
