@@ -1,0 +1,13 @@
+title Backend Filtering Flow
+
+-> App: POST("/api/filter")
+App -> Module: run_modules(args)
+
+activate Module #fac8db
+  Module -> Module: process_arguments()
+  Module -> Module: run_activated_modules()
+  activate Module #ff8fba
+    Module -> module1: run()
+    Module -> module2: run()
+  deactivate Module
+deactivate Module
