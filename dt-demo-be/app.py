@@ -98,8 +98,12 @@ def filter():
 @app.route("/api/filter/report", methods=["GET"])
 def get_report():
     template_path = os.path.join("filter_report", "template.html")
-    
+    db_path = os.path.join("..","database")
+
     # TODO: calculate overview_rate according to the file size
+
+    original_fName = "demo.txt"
+    converted_fName = "demo_filtered.txt"
 
     report_data_sample = {
         'title': "Report",
@@ -111,15 +115,32 @@ def get_report():
         'overview_dup': 4,
         'overview_char': 6,
         'overview_all': 0,
-        'contents_original_fName': "original.txt",
-        'contents_converted_fName': "converted.txt",
-        'contents_original': "This is the original content.",
-        'contents_converted': "This is the converted content.",
+        'contents_original_fName': original_fName,
+        'contents_converted_fName': converted_fName,
+        'contents_original': "",
+        'contents_converted': "",
         'details': {}
     }
     # update overview_all
     report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
 
+    # Original contents
+    original_fPath = os.path.join(db_path, original_fName)
+    contents_original = ""
+    with open(original_fPath, 'r', encoding='UTF-8') as file:
+        contents_original = file.read()
+        contents_original = contents_original.replace("\n", "<br> ")
+    report_data_sample['contents_original'] = contents_original
+
+    # Converted contents
+    converted_fPath = os.path.join(db_path, converted_fName)
+    contents_converted = ""
+    with open(converted_fPath, 'r', encoding='UTF-8') as file:
+        contents_converted = file.read()
+        contents_converted = contents_converted.replace("\n", "<br> ")
+    report_data_sample['contents_converted'] = contents_converted
+
+    # Details table
     report_data_sample['details'] =  get_details_table_data()
 
     return render_template(template_path, **report_data_sample)
