@@ -2,6 +2,61 @@ from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import modules.run as modules
 import os
+import pandas as pd
+
+def mark_from_sentence(sentence, part):
+    """
+    This function gets 2 arguments to partially mark from given sentence.
+
+    :param sentence: Whole sentence
+    :type sentence: string
+    :param part: part to mark
+    :type part: string
+
+    Sample Parameters:
+    - sentence: "게시글 샘플 임니다."
+    - part: "임"
+
+    Sample Return:
+    "게시글 샘플 <mark>임</mark>니다."
+    """
+    return sentence.replace(part, f'<mark>{part}</mark>')
+
+def get_details_table_data():
+    """
+    This function reads demo_details.csv file from ../database path
+    and create data to render HTML template.
+
+    Sample return is as follows
+    {
+        0: {
+            '유형': '오탈자',
+            '원문': '안녕<mark>흐</mark>세요',
+            '변환': '안녕<mark>하</mark>세요',
+        },
+        1: {
+            '유형': '개인정보: 전화번호',
+            '원문': '내 번호는 <mark>010-1234-1234</mark>야',
+            '변환': '내 번호는 <mark>010-****-****</mark>야',
+        },
+    }
+    """
+    db_path = os.path.join("..", "database")
+    details_path = os.path.join(db_path, "demo_details.csv")
+    df = pd.read_csv(details_path)
+
+    details_data = {}
+    
+    for index, row in df.iterrows():
+        details_data[index] = {
+            '유형': row['유형'],
+            '원문': mark_from_sentence(row['원문'], row['원문_부분']),
+            '변환': mark_from_sentence(row['변환'], row['변환_부분']),
+        }
+        
+    return details_data
+
+################################### API ###################################
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -17,6 +72,16 @@ def filter():
     elif request.method == 'POST':
         app.logger.info("API request on filtering func: POST")
 
+        # Sample API request body:
+        '''
+        {
+            "form": {
+                "all": false,
+                "modules": "typo,pdd,slang",
+                "input": "demo.txt"
+            }
+        }
+        '''
         data = request.get_json()
         args = modules.argparse.Namespace(
             all=data['form']['all'],
@@ -55,19 +120,7 @@ def get_report():
     # update overview_all
     report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
 
-    details_sample = {
-        1: {
-            '유형': '오탈자',
-            '원문': '안녕<mark>흐</mark>세요',
-            '변환': '안녕<mark>하</mark>세요',
-        },
-        2: {
-            '유형': '개인정보: 전화번호',
-            '원문': '내 번호는 <mark>010-1234-1234</mark>야',
-            '변환': '내 번호는 <mark>010-****-****</mark>야',
-        },
-    }
-    report_data_sample['details'] = details_sample
+    report_data_sample['details'] =  get_details_table_data()
 
     return render_template(template_path, **report_data_sample)
 

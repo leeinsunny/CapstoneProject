@@ -115,7 +115,7 @@
 
             {% for key, item in details.items() %}
             <tr>
-                <td>{{ key }}</td>
+                <td>{{ key+1 }}</td>
                 <td>{{ item['유형'] }}</td>
                 <td>{{ item['원문']|safe }}</td>
                 <td>{{ item['변환']|safe }}</td>
