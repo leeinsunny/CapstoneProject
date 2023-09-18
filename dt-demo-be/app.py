@@ -49,10 +49,25 @@ def get_report():
         'contents_original_fName': "original.txt",
         'contents_converted_fName': "converted.txt",
         'contents_original': "This is the original content.",
-        'contents_converted': "This is the converted content."
+        'contents_converted': "This is the converted content.",
+        'details': {}
     }
     # update overview_all
     report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
+
+    details_sample = {
+        1: {
+            '유형': '오탈자',
+            '원문': '안녕<mark>흐</mark>세요',
+            '변환': '안녕<mark>하</mark>세요',
+        },
+        2: {
+            '유형': '개인정보: 전화번호',
+            '원문': '내 번호는 <mark>010-1234-1234</mark>야',
+            '변환': '내 번호는 <mark>010-****-****</mark>야',
+        },
+    }
+    report_data_sample['details'] = details_sample
 
     return render_template(template_path, **report_data_sample)
 
