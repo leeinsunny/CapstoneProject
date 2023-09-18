@@ -112,15 +112,15 @@
                 <th style="width:40%">원문</th>
                 <th style="width:40%">변환</th>
             </tr>
-                
+
+            {% for key, item in details.items() %}
             <tr>
-                <td>1</td>
-                <td>오탈자</td>
-                <td>안녕<mark>흐</mark>세요</td>
-                <td>안녕<mark>하</mark>세요</td>
+                <td>{{ key }}</td>
+                <td>{{ item['유형'] }}</td>
+                <td>{{ item['원문']|safe }}</td>
+                <td>{{ item['변환']|safe }}</td>
             </tr>
-            
-            <!--동적으로 값 추가하도록-->
+            {% endfor %}
 
         </table>
 
