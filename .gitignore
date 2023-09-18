@@ -1,5 +1,8 @@
 ### DB
 database/*.txt
+database/*.xlsx
+database/*.csv
+database/*.py
 
 ### Report styles ###
 dt-demo-be/static/css/
