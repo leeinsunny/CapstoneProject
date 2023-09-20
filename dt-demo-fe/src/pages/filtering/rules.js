@@ -10,6 +10,8 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: start;
     align-items: center;
+    width: 400px;
+    height: 400px;
 `;
 
 const RulesBox = styled.div`
@@ -17,10 +19,10 @@ const RulesBox = styled.div`
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    border: 1px solid black;
-    height: 300px;
-    width: 300px;
-    margin-top: 50px;
+    border: 1px solid #bfbfbf;
+    height: 350px;
+    width: 100%;
+    border-radius: 10px;
 `;
 
 const Header = styled.div`
@@ -47,7 +49,16 @@ const Row = styled.div`
     width: 100%;
 `;
 
-const DemoRules = () => {
+const BtnBar = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+    height: 50px;
+    width: 100%;
+`;
+
+const RulesContainer = () => {
     const navigate = useNavigate();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -97,6 +108,8 @@ const DemoRules = () => {
             newFormState = { ...form, modules: checkedValues.join(",") };
         }
 
+        console.log(newFormState);
+
         try {
             await useApi.post("/api/filter", {
                 form: newFormState,
@@ -104,8 +117,8 @@ const DemoRules = () => {
 
             alert("필터링이 완료되었습니다.");
             navigate("/filter/report");
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.log(err.response);
         }
     };
 
@@ -139,17 +152,17 @@ const DemoRules = () => {
                     ))}
                 </Wrapper>
             </RulesBox>
-
-            <Button
-                style={{
-                    backgroundColor: "#212653",
-                    color: "white",
-                    marginTop: "30px",
-                }}
-                onClick={handleStartFiltering}
-            >
-                Start Filtering
-            </Button>
+            <BtnBar>
+                <Button
+                    style={{
+                        backgroundColor: "#212653",
+                        color: "white",
+                    }}
+                    onClick={handleStartFiltering}
+                >
+                    Start Filtering
+                </Button>
+            </BtnBar>
 
             <Modal open={modalVisible} onCancel={closeModal} footer={null}>
                 {selectedRow && selectedRow.description}
@@ -158,4 +171,4 @@ const DemoRules = () => {
     );
 };
 
-export default DemoRules;
+export default RulesContainer;

@@ -4,10 +4,10 @@ import Home from "./pages/01_home";
 import Filter from "./pages/02_filter";
 import Converter from "./pages/03_converter";
 import Statistics from "./pages/04_statistics";
-import DemoFileList from "./pages/demo/filelist";
-import DemoRules from "./pages/demo/rules";
-import DemoReport from "./pages/demo/report";
-import DemoUpload from "./pages/demo/upload";
+import UploadContainer from "./pages/filtering/upload";
+import FileListContainer from "./pages/filtering/filelist";
+import RulesContainer from "./pages/filtering/rules";
+import ReportContainer from "./pages/filtering/report";
 
 const Router = () => {
     return (
@@ -17,10 +17,10 @@ const Router = () => {
                 <Route path="/" element={<Navigate replace to="/home" />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/filter" element={<Filter />}>
-                    <Route index element={<DemoUpload />} />
-                    <Route path="filelist" element={<DemoFileList />} />
-                    <Route path="rules" element={<DemoRules />} />
-                    <Route path="report" element={<DemoReport />} />
+                    {/* <Route index element={<UploadContainer />} /> */}
+                    <Route path="filelist" element={<FileListContainer />} />
+                    <Route path="rules" element={<RulesContainer />} />
+                    <Route path="report" element={<ReportContainer />} />
                 </Route>
                 <Route path="/converter" element={<Converter />} />
                 <Route path="/statistics" element={<Statistics />} />
