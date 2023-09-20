@@ -4,7 +4,6 @@ import Home from "./pages/01_home";
 import Filter from "./pages/02_filter";
 import Converter from "./pages/03_converter";
 import Statistics from "./pages/04_statistics";
-import UploadContainer from "./pages/filtering/upload";
 import FileListContainer from "./pages/filtering/filelist";
 import RulesContainer from "./pages/filtering/rules";
 import ReportContainer from "./pages/filtering/report";
@@ -17,7 +16,6 @@ const Router = () => {
                 <Route path="/" element={<Navigate replace to="/home" />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/filter" element={<Filter />}>
-                    {/* <Route index element={<UploadContainer />} /> */}
                     <Route path="filelist" element={<FileListContainer />} />
                     <Route path="rules" element={<RulesContainer />} />
                     <Route path="report" element={<ReportContainer />} />

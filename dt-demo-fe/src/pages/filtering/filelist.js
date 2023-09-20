@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { List, Checkbox, Button } from "antd";
 import axios from "axios";
 import UploadBtn from "../../components/file/uploadBtn";
+import useApi from "../../hooks/api/axiosInterceptor";
 
 const Container = styled.div`
     display: flex;
@@ -53,12 +54,13 @@ const FileListContainer = () => {
 
     const getFiles = async () => {
         try {
-            const { data } = await axios.get("/api/filter/filelist");
+            const { data } = await useApi.get("/filter/filelist");
+
             console.log("get files from server");
             setFileList(data);
             setIsFileExist(true);
         } catch (err) {
-            console.log(err);
+            console.log(err.response);
         }
     };
 
