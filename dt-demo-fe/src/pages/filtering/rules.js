@@ -108,17 +108,15 @@ const RulesContainer = () => {
             newFormState = { ...form, modules: checkedValues.join(",") };
         }
 
-        console.log(newFormState);
-
         try {
-            await useApi.post("/api/filter", {
+            await useApi.post("/filter", {
                 form: newFormState,
             });
 
             alert("필터링이 완료되었습니다.");
             navigate("/filter/report");
         } catch (err) {
-            console.log(err.response);
+            console.log(err);
         }
     };
 
