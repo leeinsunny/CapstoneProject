@@ -55,7 +55,6 @@ const FileListContainer = () => {
     const getFiles = async () => {
         try {
             const { data } = await useApi.get("/filter/filelist");
-
             console.log("get files from server");
             setFileList(data);
             setIsFileExist(true);
@@ -79,8 +78,13 @@ const FileListContainer = () => {
                             border: "1px solid #bfbfbf",
                         }}
                         header={
-                            <div style={{ fontWeight: "bolder" }}>
-                                File List
+                            <div
+                                style={{
+                                    fontWeight: "bolder",
+                                    fontSize: "15px",
+                                }}
+                            >
+                                파일리스트
                             </div>
                         }
                         bordered

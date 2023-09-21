@@ -104,6 +104,28 @@ def file_list():
     return jsonify(file_list_sample)
         
 
+@app.route("/api/filter/upload", methods=["POST"])
+def file_upload():
+    if request.method == 'POST':
+        app.logger.info("API request on upload func: POST")
+
+        # Sample API request body:
+        '''
+        {
+            "form": {
+                "name": "demo.txt",
+                "uploadedDate": "2023-09-21",
+                "status": "uploaded",
+                "filteredDate": ""
+            }
+        }
+        '''
+        
+        return "File Uploaded"
+    else:
+        return "Unexpected API request"
+
+
 @app.route("/api/filter/report", methods=["GET"])
 def get_report():
     template_path = os.path.join("filter_report", "template.html")
