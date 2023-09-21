@@ -95,6 +95,15 @@ def filter():
     else:
         return "Unexpected API request"
 
+@app.route("/api/filter/filelist", methods=["GET"])
+def file_list():
+    app.logger.info("API request on upload func: GET")
+
+    # TODO: make arguments for file list
+    file_list_sample = ["file1", "file2", "file3", "file4", "new file"]
+    return jsonify(file_list_sample)
+        
+
 @app.route("/api/filter/report", methods=["GET"])
 def get_report():
     template_path = os.path.join("filter_report", "template.html")
