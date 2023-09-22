@@ -7,6 +7,7 @@ import modules.slang.run as slang
 import modules.pdd.run as pdd
 import modules.dup.run as dup
 import modules.typo.run as typo
+import modules.spc.run as spc
 
 # Use following importing commands 
 # when running /modules/run.py directly(not from API)
@@ -14,11 +15,16 @@ import modules.typo.run as typo
 # import pdd.run as pdd
 # import dup.run as dup
 # import typo.run as typo
+# import spc.run as spc
 
 def runModule(args):
     # TODO: update module list info
     # Typo must run prior to other modules
     module_list = {
+       "spc": {
+          "enabled": False,
+          "module": spc
+       },
        "typo": {
           "enabled": False,
           "module": typo
