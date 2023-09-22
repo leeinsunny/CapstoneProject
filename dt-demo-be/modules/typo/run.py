@@ -29,11 +29,24 @@ def run(fileName):
         contents = contents.replace('\n', '\r\n')
         response = requests.post('http://164.125.7.61/speller/results', data={'text1': contents})
         data = response.text.split('data = [', 1)[-1].rsplit('];', 1)[0]
-        data_dict = json.loads(data)
-        err_info = data_dict['errInfo']
+
+        # Initialize storage to match typo and expected(correct) word
         typo_detected = []
-        for err in err_info:
-            typo_detected.append("typo: "+err["orgStr"]+", "+"expected word: "+err["candWord"])
+
+        # Catch Json decode error if API response is unexpected data type
+        try:
+            '''
+            Here loads typo response,
+            and match typo words to the expected(correct) words
+            '''
+            data_dict = json.loads(data)
+            err_info = data_dict['errInfo']
+            for err in err_info:
+                typo_detected.append("typo: "+err["orgStr"]+", "+"expected word: "+err["candWord"])
+        except json.JSONDecodeError as e:
+            if "찾지 못한 맞춤법 오류나 문법 오류" in data:
+                # When error has not detected from the API:
+                print("Given input data seems clean enough")
 
         print("Replacing errors ...")
         # Typo replacement
