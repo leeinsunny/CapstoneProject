@@ -21,10 +21,6 @@ def runModule(args):
     # TODO: update module list info
     # Typo must run prior to other modules
     module_list = {
-       "spc": {
-          "enabled": False,
-          "module": spc
-       },
        "typo": {
           "enabled": False,
           "module": typo
