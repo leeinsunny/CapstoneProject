@@ -8,6 +8,9 @@ database/*.py
 dt-demo-be/static/css/
 dt-demo-be/static/js/
 
+### database connection ###
+dt-demo-be/dbconn.py
+
 ### react ###
 .DS_*
 *.log
