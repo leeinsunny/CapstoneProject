@@ -50,8 +50,6 @@ const UploadBtn = () => {
 
     useEffect(() => {
         setSelectedFile((currentValue) => fileInputRef.current.files[0]);
-
-        console.log("selected in useEffect", selectedFile);
     }, [selectedFile]);
 
     return (
@@ -67,7 +65,7 @@ const UploadBtn = () => {
             />
             <Button
                 style={{ backgroundColor: "#212653", color: "white" }}
-                onClick={handleButtonClick}
+                onClick={() => handleButtonClick}
             >
                 Upload
             </Button>

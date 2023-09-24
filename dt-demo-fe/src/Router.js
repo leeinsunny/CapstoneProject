@@ -4,9 +4,9 @@ import Home from "./pages/01_home";
 import Filter from "./pages/02_filter";
 import Converter from "./pages/03_converter";
 import Statistics from "./pages/04_statistics";
-import FileListContainer from "./pages/filtering/filelist";
-import RulesContainer from "./pages/filtering/rules";
-import ReportContainer from "./pages/filtering/report";
+import DetectionContainer from "./pages/filtering/detectionReport";
+import ConversionContainer from "./pages/filtering/conversionReport";
+import FilterMain from "./pages/filtering";
 
 const Router = () => {
     return (
@@ -16,9 +16,12 @@ const Router = () => {
                 <Route path="/" element={<Navigate replace to="/home" />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/filter" element={<Filter />}>
-                    <Route path="filelist" element={<FileListContainer />} />
-                    <Route path="rules" element={<RulesContainer />} />
-                    <Route path="report" element={<ReportContainer />} />
+                    <Route index element={<FilterMain />} />
+                    <Route path="detection" element={<DetectionContainer />} />
+                    <Route
+                        path="conversion"
+                        element={<ConversionContainer />}
+                    />
                 </Route>
                 <Route path="/converter" element={<Converter />} />
                 <Route path="/statistics" element={<Statistics />} />
