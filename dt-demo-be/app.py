@@ -111,6 +111,25 @@ def get_overview_numbers():
         
     return num_detected
 
+def get_overview_rate():
+    db_path = os.path.join("..", "database")
+
+    # Calculate given file size
+    original_file_path = os.path.join(db_path, "demo.txt")
+    with open(original_file_path, 'rb') as file:
+        file_contents = file.read()
+    original_file_size = len(file_contents)
+    file.close()
+
+    # Calculate error size
+    details_path = os.path.join(db_path, "demo_details.csv")
+    df = pd.read_csv(details_path)
+    error_data = df['원문_부분']
+    error_data_size = error_data.str.encode('utf-8').str.len().sum()
+    app.logger.info("Error size {}".format(error_data_size))
+
+    return f"{round((error_data_size/original_file_size)*100, 2)}%"
+
 ################################### API ###################################
 
 app = Flask(__name__)
@@ -212,7 +231,7 @@ def get_report():
         'date': "",
         'title': "Report",
         'title_fileName': "demo.txt",
-        'overview_rate': "10%",
+        'overview_rate': "0%",
         "selected_modules" : "typo,slang,pdd,dup,spc",
         "num_detected" : {
             'overview_typo' : 0,
@@ -231,6 +250,9 @@ def get_report():
     # update date
     now = datetime.now()
     report_data_sample['date'] = now.strftime("%Y-%m-%d(%a) %H:%M")
+
+    # update count for each modules
+    report_data_sample['overview_rate'] = get_overview_rate()
 
     # update selected modules
     # TODO: update selected modules by getting information from database
