@@ -92,7 +92,7 @@ const RulesContainer = () => {
         setModalVisible(false);
     };
 
-    const handleStartFiltering = async (e) => {
+    const handleStartDetection = async (e) => {
         e.preventDefault(); // prevent form submit from reloading the page
 
         setForm({ ...form, modules: checkedValues.join() });
@@ -108,13 +108,16 @@ const RulesContainer = () => {
             newFormState = { ...form, modules: checkedValues.join(",") };
         }
 
+        console.log("startDetection clicked");
+        console.log(newFormState);
+
         try {
             await useApi.post("/filter", {
                 form: newFormState,
             });
 
             alert("필터링이 완료되었습니다.");
-            navigate("/filter/report");
+            navigate("/filter/detection");
         } catch (err) {
             console.log(err);
         }
@@ -156,9 +159,9 @@ const RulesContainer = () => {
                         backgroundColor: "#212653",
                         color: "white",
                     }}
-                    onClick={handleStartFiltering}
+                    onClick={handleStartDetection}
                 >
-                    Start Filtering
+                    Start Detection
                 </Button>
             </BtnBar>
 

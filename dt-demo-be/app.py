@@ -126,6 +126,23 @@ def file_upload():
         return "Unexpected API request"
 
 
+@app.route("/api/filter/detection/type", methods=["POST"])
+def detection_type():
+    if request.method == 'POST':
+        app.logger.info("API request on detection type func: POST")
+
+        # Sample API request body:
+        '''
+        {
+            "type": "word"
+        }
+        '''
+        
+        return "Detection Type Requested"
+    else:
+        return "Unexpected API request"
+
+
 @app.route("/api/filter/report", methods=["GET"])
 def get_report():
     template_path = os.path.join("filter_report", "template.html")
