@@ -4,10 +4,9 @@ import os
 def run(fileName):
   print("---Slang module processing---")
 
-  # Read slang dict
-  slang_dict = pd.read_excel("modules/slang/slang_dict_v1.xlsx")
-  # for s in slang_dict["slang"]:
-  #     print(s)
+  # Read slang dict and sort by length
+  slang_dict = pd.read_excel("modules/slang/slang_dict_v2.xlsx")
+  sorted_slangs = sorted(slang_dict['slang'], key=len, reverse=True)
 
   # Find input file from database directory
   db_dir = os.path.join("..", "database")
@@ -22,7 +21,7 @@ def run(fileName):
       for line in f:
         target=line.strip()
         print(f"target sentence: {target}")
-        for s in slang_dict["slang"]:
+        for s in sorted_slangs:
           target = target.replace(s, "*"*len(s))
         nf.write(target+'\n')
     f.close()
