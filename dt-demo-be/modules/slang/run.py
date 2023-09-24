@@ -1,7 +1,13 @@
-import pandas as pd
 import os
+import requests
+import json
+import re
+import pandas as pd
+import time
+
 
 def run(fileName):
+  start =time.time()
   print("---Slang module processing---")
 
   # Read slang dict and sort by length
@@ -24,8 +30,10 @@ def run(fileName):
         for s in sorted_slangs:
           target = target.replace(s, "*"*len(s))
         nf.write(target+'\n')
-    f.close()
-  nf.close()
+    #f.close()
+  #nf.close()
+  end = time.time() 
+  print(f"{end-start:.5f}sec")
 
 if __name__ == "__main__":
   run("fake.txt")
