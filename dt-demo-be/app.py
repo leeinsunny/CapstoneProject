@@ -3,6 +3,7 @@ from flask_cors import CORS
 import modules.run as modules
 import os
 import pandas as pd
+from datetime import datetime
 
 def mark_from_sentence(sentence, part):
     """
@@ -55,6 +56,60 @@ def get_details_table_data():
         }
         
     return details_data
+
+def get_overview_numbers():
+    """
+    This function reads demo_details.csv file from ../database path
+    and count numbers of error detected upon each modules
+
+    Sample return is as follows
+    {
+        'overview_typo' : 1,
+        'overview_slang' : 1,
+        'overview_pdd' : 1,
+        'overview_dup': 0,
+        'overview_spc': 0,
+    }
+    """
+    db_path = os.path.join("..", "database")
+    details_path = os.path.join(db_path, "demo_details.csv")
+    df = pd.read_csv(details_path)
+
+    num_detected = {
+        'overview_typo' : 0,
+        'overview_slang' : 0,
+        'overview_pdd' : 0,
+        'overview_dup': 0,
+        'overview_spc': 0,
+    }
+
+    name_matcher = {
+        'overview_typo' : {
+            'korean': "오탈자",
+            'module': "typo"
+        },
+        'overview_slang' : {
+            'korean': "비속어",
+            'module': "slang"
+        },
+        'overview_pdd' : {
+            'korean': "개인정보",
+            'module': "pdd"
+        },
+        'overview_dup': {
+            'korean': "중복",
+            'module': "dup"
+        },
+        'overview_spc': {
+            'korean': "특수문자",
+            'module': "spc"
+        },
+    }
+    
+    for n in num_detected:
+        num_detected[n] = len(df[df['유형'] == name_matcher[n]['korean']])
+        
+    return num_detected
 
 ################################### API ###################################
 
@@ -154,14 +209,18 @@ def get_report():
     converted_fName = "demo_filtered.txt"
 
     report_data_sample = {
+        'date': "",
         'title': "Report",
         'title_fileName': "demo.txt",
         'overview_rate': "10%",
-        'overview_typo': 5,
-        'overview_slang': 3,
-        'overview_pdd': 2,
-        'overview_dup': 4,
-        'overview_char': 6,
+        "selected_modules" : "typo,slang,pdd,dup,spc",
+        "num_detected" : {
+            'overview_typo' : 0,
+            'overview_slang' : 0,
+            'overview_pdd' : 0,
+            'overview_dup': 0,
+            'overview_spc': 0,
+        },
         'overview_all': 0,
         'contents_original_fName': original_fName,
         'contents_converted_fName': converted_fName,
@@ -169,8 +228,20 @@ def get_report():
         'contents_converted': "",
         'details': {}
     }
+    # update date
+    now = datetime.now()
+    report_data_sample['date'] = now.strftime("%Y-%m-%d(%a) %H:%M")
+
+    # update selected modules
+    # TODO: update selected modules by getting information from database
+    # Following is sample data
+    report_data_sample['selected_modules'] = "typo,slang,pdd"
+
+    # update count for each modules
+    report_data_sample['num_detected'] = get_overview_numbers()
+
     # update overview_all
-    report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
+    report_data_sample['overview_all'] = report_data_sample['num_detected']['overview_typo'] + report_data_sample['num_detected']['overview_slang'] + report_data_sample['num_detected']['overview_pdd'] + report_data_sample['num_detected']['overview_dup'] + report_data_sample['num_detected']['overview_spc']
 
     # Original contents
     original_fPath = os.path.join(db_path, original_fName)

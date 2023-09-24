@@ -17,6 +17,17 @@
             color: black;
             border-radius: 7px
         }
+        .card-body label {
+            margin-right: 20px;
+        }
+        #date {
+            top: 0;
+            right: 0;
+            color: lightgray;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 7px;
+        }
     </style>
 
 </head>
@@ -25,6 +36,7 @@
     <hr/>
 
     <div class="container-fluid" id="title">
+        <div class="date", id="date" style="text-align: right;">Created time: {{ date }}</div>
         <figure class="text-center">
             <h1>{{ title_fileName }} 변환 보고서</h1>
         </figure>
@@ -35,32 +47,65 @@
     <div class="container-fluid" id="overview">
         <h2>Overview</h2>
 
-        <p class="lead">
-            <ul>
-                <p>총 오류율 = {{ overview_rate }} </p>
-            </ul>
-        </p>
+        <div class="card" style="width:20%; flex-direction: row; margin-bottom: 10px;">
+            <div class="card-header" style="display: flex; align-items: center;">
+                <div class="card-title" style="margin: 0;">총 오류율</div>
+            </div>
+            <div class="card-body" style="display: flex; align-items: center;">
+                <span style="margin: 0;">{{ overview_rate }}</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="display: flex; align-items: center;">
+                <div class="card-title" style="margin: 0;">정제모듈 정보</div>
+            </div>
+            <div class="card-body">
+                <label>
+                    <input type="checkbox" id="typoCheckbox" aria-label="typo" disabled> 오탈자 정제
+                </label>
+                <label>
+                    <input type="checkbox" id="slangCheckbox" aria-label="slang" disabled> 비속어 정제
+                </label>
+                <label>
+                    <input type="checkbox" id="pddCheckbox" aria-label="pdd" disabled> 개인정보 정제
+                </label>
+                <label>
+                    <input type="checkbox" id="dupCheckbox" aria-label="dup" disabled> 중복 데이터 정제
+                </label>
+                <label>
+                    <input type="checkbox" id="spcCheckbox" aria-label="spc" disabled> 특수문자 정제
+                </label>
+            </div>
+        </div>
 
         <table class="table" id="overview-table">
             <thead>
-            <tr>
-                <th scope="col" style="width:15%">오탈자</th>
-                <th scope="col" style="width:15%">비속어</th>
-                <th scope="col" style="width:15%">개인정보</th>
-                <th scope="col" style="width:15%">중복</th>
-                <th scope="col" style="width:15%">특수문자</th>
-                <th scope="col" style="width:20%">총</th>
-            </tr>
+                {% set module_mapping = {
+                    'typo': '오탈자',
+                    'slang': '비속어',
+                    'pdd': '개인정보',
+                    'dup': '중복데이터',
+                    'spc': '특수문자'
+                } %}
+
+                <tr>
+                    {% for module in selected_modules.split(',') %}
+                        {% if module in module_mapping %}
+                            <th scope="col" style="width:{{ 100 / (selected_modules.split(',')|length+1) }}">{{ module_mapping[module] }}</th>
+                        {% endif %}
+                    {% endfor %}
+                    <th scope="col" style="width:{{ 100 / (selected_modules.split(',')|length+1) }}">총</th>
+                </tr>
+
             </thead>
             <tbody>
-            <tr>
-                <td>{{overview_typo}}건</td>
-                <td>{{overview_slang}}건</td>
-                <td>{{overview_pdd}}건</td>
-                <td>{{overview_dup}}건</td>
-                <td>{{overview_char}}건</td>
-                <td>{{overview_all}}건</td>
-            </tr>
+                <tr>
+                    {% for module in selected_modules.split(',') %}
+                    <td>{{ num_detected['overview_' + module] }}건</td>
+                    {% endfor %}
+                    <td>{{ overview_all }} 건</td>
+                </tr>
             </tbody>
         </table>
 
@@ -128,6 +173,18 @@
 
     <!-- Bootstrap -->
     <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- Overview: check selected module-->
+    <script>
+        const selectedModules = "{{ selected_modules }}";
+        const modules = selectedModules.split(',');
+        modules.forEach(module => {
+            const checkbox = document.getElementById(`${module}Checkbox`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    </script>
 
 </body>
 </html>
