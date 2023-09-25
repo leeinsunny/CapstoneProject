@@ -130,6 +130,27 @@ def get_overview_rate():
 
     return f"{round((error_data_size/original_file_size)*100, 2)}%"
 
+def get_details_table_data_for_detection_report():
+    # TODO: Implement me
+
+    return {
+        0: {
+            '유형': '오탈자',
+            '원문': '게시글 샘플 <mark>잉</mark>니다.',
+            '원문_부분': ' <mark style="#ffc0cb">잉</mark>',
+        },
+        1: {
+            '유형': '비속어',
+            '원문': '이건 <mark>시발</mark> 욕설 문장이다.',
+            '원문_부분': '<mark style="#eee8d1">시발</mark>',
+        },
+        2: {
+            '유형': '개인정보',
+            '원문': '<mark>010-1234-5678</mark>로 연락해라!',
+            '원문_부분': '<mark style="#d2eddd">010-1234-5678</mark>',
+        },
+    }
+
 ################################### API ###################################
 
 app = Flask(__name__)
@@ -217,9 +238,9 @@ def detection_type():
         return "Unexpected API request"
 
 
-@app.route("/api/filter/report", methods=["GET"])
-def get_report():
-    template_path = os.path.join("filter_report", "template.html")
+@app.route("/api/filter/convreport", methods=["GET"])
+def get_conv_report():
+    template_path = os.path.join("filter_report", "conversion_template.html")
     db_path = os.path.join("..","database")
 
     # TODO: calculate overview_rate according to the file size
@@ -229,7 +250,7 @@ def get_report():
 
     report_data_sample = {
         'date': "",
-        'title': "Report",
+        'title': "Conversion Report",
         'title_fileName': "demo.txt",
         'overview_rate': "0%",
         "selected_modules" : "typo,slang,pdd,dup,spc",
@@ -283,6 +304,79 @@ def get_report():
 
     # Details table
     report_data_sample['details'] =  get_details_table_data()
+
+    return render_template(template_path, **report_data_sample)
+
+@app.route("/api/filter/detreport", methods=["GET"])
+def get_det_report():
+    template_path = os.path.join("filter_report", "detection_template.html")
+
+    report_data_sample = {
+        'date': "",
+        'title': "Detection Report",
+        'title_fileName': "demo.txt",
+        "selected_modules" : "typo,slang,pdd,dup,spc",
+        "num_detected" : {
+            'overview_typo' : 0,
+            'overview_slang' : 0,
+            'overview_pdd' : 0,
+            'overview_dup': 0,
+            'overview_spc': 0,
+        },
+        'overview_all': 0,
+        'contents':{},
+        'overview_rate':"",
+        'details':"",
+    }
+    # update date
+    now = datetime.now()
+    report_data_sample['date'] = now.strftime("%Y-%m-%d(%a) %H:%M")
+
+    # update selected modules
+    # TODO: update selected modules by getting information from database
+    # Following is sample data
+    report_data_sample['selected_modules'] = "typo,slang,pdd"
+
+    # update count for each modules
+    report_data_sample['num_detected'] = get_overview_numbers()
+
+    # update overview_all
+    report_data_sample['overview_all'] = report_data_sample['num_detected']['overview_typo'] + report_data_sample['num_detected']['overview_slang'] + report_data_sample['num_detected']['overview_pdd'] + report_data_sample['num_detected']['overview_dup'] + report_data_sample['num_detected']['overview_spc']
+
+    # TODO: update detection contents dynamically
+    report_data_sample['contents'] = {
+            # 0: sid
+            0: {
+                'osent':'게시글 샘플 잉니다.',
+                'typo': {0:{"dvalue": "잉", "cvalue":"입"}},
+                'slang':{},
+                'dup':{},
+                'pdd':{},
+                'spc':{}
+            },
+            1: {
+                'osent':'이건 시발 욕설 문장이다. ',
+                'typo': {},
+                'slang':{0:{"dvalue": "시발", "cvalue":"**"}},
+                'dup':{},
+                'pdd':{},
+                'spc':{}
+            },
+            2: {
+                'osent':'010-1234-5678로 연락해라! ',
+                'typo': {},
+                'slang':{},
+                'dup':{0:{"dvalue": "010-1234-5678", "cvalue":"010-****-****"}},
+                'pdd':{},
+                'spc':{}
+            },
+        }
+    
+    # update count for each modules
+    report_data_sample['overview_rate'] = get_overview_rate()
+
+    # Details table
+    report_data_sample['details'] =  get_details_table_data_for_detection_report()
 
     return render_template(template_path, **report_data_sample)
 
