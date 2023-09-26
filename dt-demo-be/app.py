@@ -4,6 +4,7 @@ import modules.run as modules
 import os
 import pandas as pd
 from datetime import datetime
+import dbconn
 
 def mark_from_sentence(sentence, part):
     """
@@ -23,6 +24,7 @@ def mark_from_sentence(sentence, part):
     """
     return sentence.replace(part, f'<mark>{part}</mark>')
 
+# TODO: remove me
 def get_details_table_data():
     """
     This function reads demo_details.csv file from ../database path
@@ -150,6 +152,32 @@ def get_details_table_data_for_detection_report():
             '원문_부분': '<mark style="#d2eddd">010-1234-5678</mark>',
         },
     }
+
+def get_details_table_data_from_db():
+    """
+    This function reads data from database
+    """
+    db_conn = dbconn.connect_to_db()
+
+    query1 = "SELECT * FROM doc;"
+    query2 = "SELECT * FROM sprocessing;"
+
+    try:
+        cursor = db_conn.cursor()
+
+        for i, query in enumerate([query1, query2]):
+            cursor.execute(query)
+            query_result = cursor.fetchall()
+
+            app.logger.info("{} QUERY RESULT {} {}".format("-"*20, (i+1), "-"*20))
+
+            for index, q_r in enumerate(query_result):
+                app.logger.info(f"Record#{index+1}: {q_r}")
+        cursor.close()
+    except Exception as e:
+        print("Error:", str(e))
+    finally:
+        db_conn.close()
 
 ################################### API ###################################
 
@@ -302,7 +330,6 @@ def get_conv_report():
         contents_converted = contents_converted.replace("\n", "<br> ")
     report_data_sample['contents_converted'] = contents_converted
 
-    # Details table
     report_data_sample['details'] =  get_details_table_data()
 
     return render_template(template_path, **report_data_sample)
@@ -388,6 +415,13 @@ def converter():
 @app.route("/api/statistics")
 def statistics():
     data = {'data': 'Hi, this is statistics request from Flask server.'}
+    return jsonify(data)
+
+# TODO: Remove me
+@app.route("/api/dbconntest")
+def dbconntest(): 
+    get_details_table_data_from_db()
+    data = {'data': 'Hi, this is dbconntest request from Flask server.'}
     return jsonify(data)
 
 if __name__ == '__main__':
