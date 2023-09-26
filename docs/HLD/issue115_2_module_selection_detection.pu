@@ -1,0 +1,29 @@
+@startuml
+title Module selection & detection
+
+activate User
+  User -> User : select module type
+  User -> Web : start detection
+deactivate User
+
+activate Web
+  Web -> DB : send selected modules info
+  DB -> DB : update doc table(selected modules)
+  
+  Web -> Web : run selected modules
+  activate Web
+    Web -> DB : request sentence info
+    DB --> Web : return sentence information(sid, osent)
+    Web -> Web : run module
+    Web -> DB : send detection result
+  deactivate Web
+  
+  == module running finished ==
+  
+  Web -> DB : request detected result
+  DB --> Web : return sentence information
+  Web -> Web : create detection report
+  Web --> User : return detection report
+
+deactivate Web
+@enduml
