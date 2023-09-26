@@ -1,0 +1,17 @@
+@startuml
+title Upload
+
+User -> Web : upload file
+Web -> DB: send file info
+activate DB
+  DB -> DB: update doc table(did, contents)
+deactivate DB
+
+activate Web
+  Web -> Web: split content into sentence
+  Web -> DB: send sentences info
+  activate DB
+    DB -> DB : update sprocessing table(sid, osent)
+  deactivate DB
+deactivate Web
+@enduml

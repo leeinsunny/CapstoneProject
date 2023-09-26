@@ -1,0 +1,14 @@
+@startuml
+title Conversion
+activate User
+  User -> User : select conversion option
+  User -> Web : convert
+deactivate User
+
+activate Web
+  Web -> DB : request sentence info
+  DB --> Web : return sentence and detection information
+  Web -> Web : create conversion report
+  Web --> User : return conversion report
+deactivate Web
+@enduml
