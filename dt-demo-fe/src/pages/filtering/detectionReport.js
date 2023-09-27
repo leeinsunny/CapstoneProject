@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../hooks/api/axiosInterceptor";
+import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import MakePdf from "../../components/report/makePdf";
 
 const Container = styled.div`
     display: flex;
@@ -16,10 +16,10 @@ const Container = styled.div`
 const ReportBox = styled.div`
     display: flex;
     flex-direction: column;
-    border: 1px solid black;
-    padding: 20px;
-    width: 500px;
+    padding: 10px;
+    width: 800px;
     height: 500px;
+    border: 1px solid black;
 `;
 
 const BottomContainer = styled.div`
@@ -41,6 +41,7 @@ const RadioGroup = styled.div`
 const DetectionContainer = () => {
     const [radioSelected, setRadioSelected] = useState("");
     const navigate = useNavigate();
+    const pdfRef = useRef();
 
     const onChange = (e) => {
         setRadioSelected(e.target.value);
@@ -58,18 +59,78 @@ const DetectionContainer = () => {
             await useApi.post("/filter/detection/type", {
                 type: radioSelected,
             });
-            console.log("detection type", radioSelected, " sent successfully");
+            alert("검출이 완료되었습니다.");
             navigate("/filter/conversion");
         } catch (err) {
             console.log(err.response);
         }
     };
 
+    const htmlStringToPdf = async (htmlString, pdfRef) => {
+        let iframe = document.createElement("iframe");
+        iframe.style.visibility = "hidden";
+        document.body.appendChild(iframe);
+        let iframedoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframedoc.body.innerHTML = htmlString;
+
+        let canvas = await html2canvas(iframedoc.body, {
+            windowWidth: 800,
+        });
+        let imgData = canvas.toDataURL("image/png");
+
+        const doc = new jsPDF({
+            format: "a4",
+            unit: "mm",
+        });
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        const widthRatio = pageWidth / canvas.width;
+        const customHeight = canvas.height * widthRatio;
+
+        doc.addImage(imgData, "png", 0, 0, pageWidth, customHeight);
+
+        let heightLeft = customHeight;
+        let heightAdd = -pageHeight;
+
+        // over 1 page
+        while (heightLeft >= pageHeight) {
+            doc.addPage();
+            doc.addImage(imgData, "png", 0, heightAdd, pageWidth, customHeight);
+            heightLeft -= pageHeight;
+            heightAdd -= pageHeight;
+        }
+
+        let pdfBlob = doc.output("blob");
+        pdfRef.current.src = URL.createObjectURL(pdfBlob);
+    };
+
     useEffect(() => {}, [radioSelected]);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await useApi.get("/filter/detreport");
+                const html = response.data;
+
+                htmlStringToPdf(html, pdfRef);
+            } catch (error) {
+                console.error("Error fetching data", error);
+            }
+        }
+        fetchData();
+    }, []);
 
     return (
         <Container>
-            <ReportBox>report container</ReportBox>
+            <ReportBox>
+                <iframe
+                    ref={pdfRef}
+                    style={{ width: "100%", height: "100%" }}
+                    title="Detection Report Viewer"
+                />
+            </ReportBox>
             <BottomContainer>
                 <RadioGroup>
                     <input

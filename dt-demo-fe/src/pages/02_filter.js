@@ -4,10 +4,10 @@ import styled from "styled-components";
 
 const MainContainer = styled.div`
     display: flex;
-    width: 100vw;
     height: 100vh;
-    align-items: center;
+    align-items: start;
     justify-content: center;
+    margin-top: 40px;
 `;
 
 const Filter = () => {
