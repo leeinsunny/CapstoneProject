@@ -65,7 +65,7 @@ const UploadBtn = () => {
             />
             <Button
                 style={{ backgroundColor: "#212653", color: "white" }}
-                onClick={() => handleButtonClick}
+                onClick={handleButtonClick}
             >
                 Upload
             </Button>
