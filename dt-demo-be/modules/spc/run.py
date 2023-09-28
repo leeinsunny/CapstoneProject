@@ -1,16 +1,17 @@
 import pandas as pd
 import os
 import time
+import emoji
+
 
 def run(fileName):
     
     print("---Special character replacing module processing---")
     
     # Read Excel and save to ../database/fake.txt
-    test_dict = pd.read_csv("../database/seoul_freeboard.csv")
+    test_data = pd.read_excel("../database/dataset.xlsx")
     with open("../database/demo.txt", "w", encoding='utf-8') as fd:
-      for t in test_dict['content']:
-            # print(t)
+      for t in test_data['document']:
             line = t.split('\n')
             for l in line:
                   fd.write(l)
@@ -34,9 +35,10 @@ def run(fileName):
         with open(file_dir, "r", encoding='utf-8') as f:
             for line in f:
                 target=line.strip()
-                print(f"target sentence: {target}")
+                # TODO: emoji logic if-else
+                target=emoji.demojize(target)
                 for s in spc_dict['spc']:
-                    target = target.replace(s, '#spc'+str(ord(s)))
+                    target = target.replace(s, '')
                 nf.write(target+'\n')
         f.close()
     nf.close()
