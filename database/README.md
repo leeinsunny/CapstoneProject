@@ -84,6 +84,14 @@ MariaDB [capstone]> INSERT INTO doc (dname, contents) VALUES (
 중복된 문장 입니다.
 중복된 문장 입니다.'
 );
+-- Update value when needed
+-- Start of updating queries
+MariaDB [capstone]> UPDATE doc SET pdd = True WHERE did = 1;
+MariaDB [capstone]> UPDATE sprocessing
+                    SET typo = '{"0": {"dvalue": "ㅁ", "cvalue": "뭐", "desc": ""}, "1": {"dvalue": "123", "cvalue": "1234", "desc": ""}}'
+                    WHERE sid = 3;
+-- End of updating queries
+
 MariaDB [capstone]> INSERT INTO sprocessing (sid, did, osent, typo, slang, dup, pdd, spc, csent)
 VALUES (1, 1, '게시글 샘플 잉니다.', '{"0": {"dvalue": "잉", "cvalue": "입", "desc": ""}}', NULL, NULL, NULL, NULL, NULL);
 MariaDB [capstone]> INSERT INTO sprocessing (sid, did, osent, typo, slang, dup, pdd, spc, csent)
