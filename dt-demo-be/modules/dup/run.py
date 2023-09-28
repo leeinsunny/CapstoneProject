@@ -1,8 +1,22 @@
 import os
+import time
+import pandas as pd
+
 from collections import OrderedDict
 
 def run(fileName):
+    start =time.time()
     print("---Duplication detection module processing---")
+
+    # Read Excel and save to ../database/fake.txt
+    test_dict = pd.read_csv("modules/dup/seoul_freeboard.csv")
+    with open("../database/fake.txt", "w", encoding='utf-8') as fd:
+        for t in test_dict['content']:
+            # print(t)
+            line = t.split('\n')
+            for l in line:
+                fd.write(l)
+    fd.close()
 
     # Find input file from database directory
     db_dir = os.path.join("..", "database")
@@ -25,3 +39,5 @@ def run(fileName):
             nf.write(item+"\n")
 
     nf.close()
+    end = time.time()
+    print(f"{end-start:.5f} sec")
