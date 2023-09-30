@@ -15,7 +15,7 @@ CapstoneProject % source .venv/bin/activate
 (.venv) CapstoneProject % pip install flask-cors
 (.venv) CapstoneProject % pip install requests
 (.venv) CapstoneProject % pip install pandas
-
+(.venv) CapstoneProject % pip install emoji
 (.venv) CapstoneProject % pip install mariadb==1.1.7
 ```
 
