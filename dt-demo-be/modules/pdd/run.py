@@ -12,6 +12,21 @@ pattern_dict = {
         "pattern": r'010-\d{4}-\d{4}',
         "type": "전화번호",
         "replacement": "010-****-****"
+    },
+    "phone_num_without_dash": {
+        "pattern": r'010\d{8}',
+        "type": "전화번호",
+        "replacement": "010********"
+    },
+     "email": {
+        "pattern": r'\b[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}\b',
+        "type": "이메일 주소",
+        "replacement": lambda match: '*' * (match.end() - match.start() - 1) + '@'
+    },
+    "company_num": {
+        "pattern": r'\b\d{3}-?\d{2}-?\d{5}\b',
+        "type": "사업자 등록번호",
+        "replacement": "**********"
     }
 }
 

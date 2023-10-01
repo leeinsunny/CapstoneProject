@@ -135,6 +135,7 @@ export const reset = css`
     }
     @font-face {
         font-family: "Amiko-Regular";
-        src: url(.assets/fonts/Amiko/Amiko-Regular.ttf) format("truetype");
+        src: url(../../dt-demo-fe/src/assets/fonts/amiko/Amiko-Regular.ttf)
+            format("truetype");
     }
 `;

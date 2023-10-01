@@ -50,8 +50,6 @@ const UploadBtn = () => {
 
     useEffect(() => {
         setSelectedFile((currentValue) => fileInputRef.current.files[0]);
-
-        console.log("selected in useEffect", selectedFile);
     }, [selectedFile]);
 
     return (

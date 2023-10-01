@@ -3,6 +3,8 @@ from flask_cors import CORS
 import modules.run as modules
 import os
 import pandas as pd
+from datetime import datetime
+import dbconn
 
 def mark_from_sentence(sentence, part):
     """
@@ -22,6 +24,7 @@ def mark_from_sentence(sentence, part):
     """
     return sentence.replace(part, f'<mark>{part}</mark>')
 
+# TODO: remove me
 def get_details_table_data():
     """
     This function reads demo_details.csv file from ../database path
@@ -55,6 +58,126 @@ def get_details_table_data():
         }
         
     return details_data
+
+def get_overview_numbers():
+    """
+    This function reads demo_details.csv file from ../database path
+    and count numbers of error detected upon each modules
+
+    Sample return is as follows
+    {
+        'overview_typo' : 1,
+        'overview_slang' : 1,
+        'overview_pdd' : 1,
+        'overview_dup': 0,
+        'overview_spc': 0,
+    }
+    """
+    db_path = os.path.join("..", "database")
+    details_path = os.path.join(db_path, "demo_details.csv")
+    df = pd.read_csv(details_path)
+
+    num_detected = {
+        'overview_typo' : 0,
+        'overview_slang' : 0,
+        'overview_pdd' : 0,
+        'overview_dup': 0,
+        'overview_spc': 0,
+    }
+
+    name_matcher = {
+        'overview_typo' : {
+            'korean': "오탈자",
+            'module': "typo"
+        },
+        'overview_slang' : {
+            'korean': "비속어",
+            'module': "slang"
+        },
+        'overview_pdd' : {
+            'korean': "개인정보",
+            'module': "pdd"
+        },
+        'overview_dup': {
+            'korean': "중복",
+            'module': "dup"
+        },
+        'overview_spc': {
+            'korean': "특수문자",
+            'module': "spc"
+        },
+    }
+    
+    for n in num_detected:
+        num_detected[n] = len(df[df['유형'] == name_matcher[n]['korean']])
+        
+    return num_detected
+
+def get_overview_rate():
+    db_path = os.path.join("..", "database")
+
+    # Calculate given file size
+    original_file_path = os.path.join(db_path, "demo.txt")
+    with open(original_file_path, 'rb') as file:
+        file_contents = file.read()
+    original_file_size = len(file_contents)
+    file.close()
+
+    # Calculate error size
+    details_path = os.path.join(db_path, "demo_details.csv")
+    df = pd.read_csv(details_path)
+    error_data = df['원문_부분']
+    error_data_size = error_data.str.encode('utf-8').str.len().sum()
+    app.logger.info("Error size {}".format(error_data_size))
+
+    return f"{round((error_data_size/original_file_size)*100, 2)}%"
+
+def get_details_table_data_for_detection_report():
+    # TODO: Implement me
+
+    return {
+        0: {
+            '유형': '오탈자',
+            '원문': '게시글 샘플 <mark>잉</mark>니다.',
+            '원문_부분': ' <mark style="#ffc0cb">잉</mark>',
+        },
+        1: {
+            '유형': '비속어',
+            '원문': '이건 <mark>시발</mark> 욕설 문장이다.',
+            '원문_부분': '<mark style="#eee8d1">시발</mark>',
+        },
+        2: {
+            '유형': '개인정보',
+            '원문': '<mark>010-1234-5678</mark>로 연락해라!',
+            '원문_부분': '<mark style="#d2eddd">010-1234-5678</mark>',
+        },
+    }
+
+def get_details_table_data_from_db():
+    """
+    This function reads data from database
+    """
+    db_conn = dbconn.connect_to_db()
+
+    query1 = "SELECT * FROM doc;"
+    query2 = "SELECT * FROM sprocessing;"
+
+    try:
+        cursor = db_conn.cursor()
+
+        for i, query in enumerate([query1, query2]):
+            cursor.execute(query)
+            query_result = cursor.fetchall()
+
+            app.logger.info("{} QUERY RESULT {} {}".format("-"*20, (i+1), "-"*20))
+
+            for index, q_r in enumerate(query_result):
+                app.logger.info(f"Record#{index+1}: {q_r}")
+        cursor.close()
+    except Exception as e:
+        print("Error:", str(e))
+    finally:
+        db_conn.close()
 
 ################################### API ###################################
 
@@ -126,9 +249,26 @@ def file_upload():
         return "Unexpected API request"
 
 
-@app.route("/api/filter/report", methods=["GET"])
-def get_report():
-    template_path = os.path.join("filter_report", "template.html")
+@app.route("/api/filter/detection/type", methods=["POST"])
+def detection_type():
+    if request.method == 'POST':
+        app.logger.info("API request on detection type func: POST")
+
+        # Sample API request body:
+        '''
+        {
+            "type": "word"
+        }
+        '''
+        
+        return "Detection Type Requested"
+    else:
+        return "Unexpected API request"
+
+
+@app.route("/api/filter/convreport", methods=["GET"])
+def get_conv_report():
+    template_path = os.path.join("filter_report", "conversion_template.html")
     db_path = os.path.join("..","database")
 
     # TODO: calculate overview_rate according to the file size
@@ -137,14 +277,18 @@ def get_report():
     converted_fName = "demo_filtered.txt"
 
     report_data_sample = {
-        'title': "Report",
+        'date': "",
+        'title': "Conversion Report",
         'title_fileName': "demo.txt",
-        'overview_rate': "10%",
-        'overview_typo': 5,
-        'overview_slang': 3,
-        'overview_pdd': 2,
-        'overview_dup': 4,
-        'overview_char': 6,
+        'overview_rate': "0%",
+        "selected_modules" : "typo,slang,pdd,dup,spc",
+        "num_detected" : {
+            'overview_typo' : 0,
+            'overview_slang' : 0,
+            'overview_pdd' : 0,
+            'overview_dup': 0,
+            'overview_spc': 0,
+        },
         'overview_all': 0,
         'contents_original_fName': original_fName,
         'contents_converted_fName': converted_fName,
@@ -152,8 +296,23 @@ def get_report():
         'contents_converted': "",
         'details': {}
     }
+    # update date
+    now = datetime.now()
+    report_data_sample['date'] = now.strftime("%Y-%m-%d(%a) %H:%M")
+
+    # update count for each modules
+    report_data_sample['overview_rate'] = get_overview_rate()
+
+    # update selected modules
+    # TODO: update selected modules by getting information from database
+    # Following is sample data
+    report_data_sample['selected_modules'] = "typo,slang,pdd"
+
+    # update count for each modules
+    report_data_sample['num_detected'] = get_overview_numbers()
+
     # update overview_all
-    report_data_sample['overview_all'] = report_data_sample['overview_typo'] + report_data_sample['overview_slang'] + report_data_sample['overview_pdd'] + report_data_sample['overview_dup'] + report_data_sample['overview_char']
+    report_data_sample['overview_all'] = report_data_sample['num_detected']['overview_typo'] + report_data_sample['num_detected']['overview_slang'] + report_data_sample['num_detected']['overview_pdd'] + report_data_sample['num_detected']['overview_dup'] + report_data_sample['num_detected']['overview_spc']
 
     # Original contents
     original_fPath = os.path.join(db_path, original_fName)
@@ -171,8 +330,80 @@ def get_report():
         contents_converted = contents_converted.replace("\n", "<br> ")
     report_data_sample['contents_converted'] = contents_converted
 
-    # Details table
     report_data_sample['details'] =  get_details_table_data()
+
+    return render_template(template_path, **report_data_sample)
+
+@app.route("/api/filter/detreport", methods=["GET"])
+def get_det_report():
+    template_path = os.path.join("filter_report", "detection_template.html")
+
+    report_data_sample = {
+        'date': "",
+        'title': "Detection Report",
+        'title_fileName': "demo.txt",
+        "selected_modules" : "typo,slang,pdd,dup,spc",
+        "num_detected" : {
+            'overview_typo' : 0,
+            'overview_slang' : 0,
+            'overview_pdd' : 0,
+            'overview_dup': 0,
+            'overview_spc': 0,
+        },
+        'overview_all': 0,
+        'contents':{},
+        'overview_rate':"",
+        'details':"",
+    }
+    # update date
+    now = datetime.now()
+    report_data_sample['date'] = now.strftime("%Y-%m-%d(%a) %H:%M")
+
+    # update selected modules
+    # TODO: update selected modules by getting information from database
+    # Following is sample data
+    report_data_sample['selected_modules'] = "typo,slang,pdd"
+
+    # update count for each modules
+    report_data_sample['num_detected'] = get_overview_numbers()
+
+    # update overview_all
+    report_data_sample['overview_all'] = report_data_sample['num_detected']['overview_typo'] + report_data_sample['num_detected']['overview_slang'] + report_data_sample['num_detected']['overview_pdd'] + report_data_sample['num_detected']['overview_dup'] + report_data_sample['num_detected']['overview_spc']
+
+    # TODO: update detection contents dynamically
+    report_data_sample['contents'] = {
+            # 0: sid
+            0: {
+                'osent':'게시글 샘플 잉니다.',
+                'typo': {0:{"dvalue": "잉", "cvalue":"입"}},
+                'slang':{},
+                'dup':{},
+                'pdd':{},
+                'spc':{}
+            },
+            1: {
+                'osent':'이건 시발 욕설 문장이다. ',
+                'typo': {},
+                'slang':{0:{"dvalue": "시발", "cvalue":"**"}},
+                'dup':{},
+                'pdd':{},
+                'spc':{}
+            },
+            2: {
+                'osent':'010-1234-5678로 연락해라! ',
+                'typo': {},
+                'slang':{},
+                'dup':{0:{"dvalue": "010-1234-5678", "cvalue":"010-****-****"}},
+                'pdd':{},
+                'spc':{}
+            },
+        }
+    
+    # update count for each modules
+    report_data_sample['overview_rate'] = get_overview_rate()
+
+    # Details table
+    report_data_sample['details'] =  get_details_table_data_for_detection_report()
 
     return render_template(template_path, **report_data_sample)
 
@@ -184,6 +415,13 @@ def converter():
 @app.route("/api/statistics")
 def statistics():
     data = {'data': 'Hi, this is statistics request from Flask server.'}
+    return jsonify(data)
+
+# TODO: Remove me
+@app.route("/api/dbconntest")
+def dbconntest(): 
+    get_details_table_data_from_db()
+    data = {'data': 'Hi, this is dbconntest request from Flask server.'}
     return jsonify(data)
 
 if __name__ == '__main__':

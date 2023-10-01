@@ -30,6 +30,7 @@ npm install axios
 npm install http-proxy-middleware
 npm install @emotion/react
 npm install antd
+npm install html2canvas jspdf
 ```
 
 ### 3. Start server

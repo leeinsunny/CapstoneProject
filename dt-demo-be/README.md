@@ -15,6 +15,8 @@ CapstoneProject % source .venv/bin/activate
 (.venv) CapstoneProject % pip install flask-cors
 (.venv) CapstoneProject % pip install requests
 (.venv) CapstoneProject % pip install pandas
+(.venv) CapstoneProject % pip install emoji
+(.venv) CapstoneProject % pip install mariadb==1.1.7
 ```
 
 ### 2. Run server
@@ -24,4 +26,3 @@ Way 1: (.venv) dt-demo-be % python app.py
 
 Way 2: (.venv) FLASK_APP=app.py flask run 
 ```
-
