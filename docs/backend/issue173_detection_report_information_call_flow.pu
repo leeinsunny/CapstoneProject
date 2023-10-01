@@ -1,0 +1,26 @@
+@startuml
+title Detection Report 
+-> ReactApp: getDetectionReport()
+ReactApp -> FlaskApp: request_detection_report_data(did)
+activate FlaskApp
+  FlaskApp -> Document: create()
+  FlaskApp -> Document: fetchDetReportInfo(dbconn)
+  activate Document
+    Document -> Document: setDname()
+    Document -> Document: setActiveModule()
+    Document -> Document: setModuleCounts()
+    group setSentences() - loop for every sentences
+    Document -> Sentence: create()
+      activate Sentence
+        Document -> Sentence: setErrorInfo()
+        Document -> Sentence: highlightOriginalContent()
+      deactivate Sentence
+    Document -> Document: appendSentences()
+    end
+  deactivate Document
+  Document --> FlaskApp: return DetReportInfo
+deactivate FlaskApp
+FlaskApp --> ReactApp: return detection report information
+ReactApp -> ReactApp: addTimestamp()
+<-- ReactApp: detectionreport
+@enduml
