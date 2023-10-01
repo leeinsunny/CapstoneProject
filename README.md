@@ -1,6 +1,6 @@
 # CapstoneProject
 
-### Smart Cloud Storage
+### Web-based atypical big data preprocessing tool
 
 웹 기반 비정형 빅데이터 전처리 도구
 
@@ -10,27 +10,20 @@
 
 ### 📍 Goal
 
-Using **text purification tools** to process files uploaded to **cloud repositories**, automatically categorize and summarize documents.  
-It will help users find and manage documents more efficiently.
+Using **text error detection & conversion modules** to process files uploaded to **web-based services**, detect text errors including slang, duplication, personal data, special characters, typo.  
+It will help users preprocess documents more efficiently.  
 
 <br/>
 
-### 📝 Research Summary with Key Functions
+### 📝 Key Functions
 
-- Refine text in the uploaded file.
-  - Mischaracter, slang, duplicate, personal information detection
-- Store refined files in cloud storage.
-  - Extracting keywords and summarizing by document
-  - Classifying documents by keyword search
+<!-- TODO: Update key functions -->
 
 <br/>
 
-## Research Plan
+## Research on each modules
 
-- Develop text purification tool
-- Develop keyword extraction and document summary tools
-- Develop Responsive Web
-- Build Cloud Server
+<!-- TODO: Update document -->
 
 <br/>
 
@@ -47,11 +40,7 @@ It will help users find and manage documents more efficiently.
 
 </div>
 
-<br/>
+## Other information
 
-### Related Libraries
-
-- ~~`py-hanspell`~~
-- `perspective API` from google
-
- <br/>
+### Authors
+<!-- TODO: add authors -->
