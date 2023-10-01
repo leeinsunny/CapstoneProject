@@ -1,0 +1,45 @@
+@startuml
+Document "1" *-- "many" Sentence: contains
+
+class Document {
+- Flask app
+- int did
+- str dname
+- list active_module
+- dict module_count
++ str contents
+- list sentences
+
++ Document (app, did)
+
+- void setDname(dbconn)
+- void setActiveModule(dconn)
+- void setContents(dbconn)
+- void setSentences(dbconn)
+
++ void fetchDetReportInfo(dbconn)
++ dict getDetReportInfo()
+
+/' Implement later on
++ void fetchConvReportInfo(dbconn)
++ dict getConvReportInfo()
+'/
+}
+
+class Sentence {
+- Flask app
+- int did
+- int sid
+- str original_content
+- dict error_info
+- str original_highlighted_content
+- str converted_content
+- str converted_highlighted_content
+
++ Sentence (app, did, sid, original_content)
++ void setErrorInfo(error_info)
++ void highlightOriginalContent()
++ str getOriginalContent()
++ str getOriginalHighlightedContent()
+}
+@enduml

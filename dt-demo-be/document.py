@@ -1,9 +1,8 @@
 import json
-import logging
 
 modules = ["typo", "slang", "dup", "pdd", "spc"]
 
-class DetReport:
+class Document:
     def __init__(self, app, did):
         self.app = app                      # Flask app: used for logging
         self.did = did                      # Document id: must be given
@@ -11,10 +10,10 @@ class DetReport:
         self.active_module = []             # Active module chosen from user
         self.module_count = {}              # Numbers of error detected from active module
         self.contents = ""                  # original contents
-        self.contents_with_highlights = ""  # contents with highlighting of detected errors
+        self.sentences = []                 # List of Sentence objects
 
     def setDname(self, dbconn):
-        self.app.logger.info("class DetReport - setDname(): "
+        self.app.logger.info("class Document - setDname(): "
                             + "Fetching dname ...")
         query = f"SELECT dname FROM doc WHERE did = {self.did}; "
         try:
@@ -24,9 +23,9 @@ class DetReport:
             self.dname = query_result[0]
             cursor.close()
         except Exception as e:
-            self.app.logger.error("class DetReport - setDname(): "
+            self.app.logger.error("class Document - setDname(): "
                                   + "Error fetching dname from database.")
-            self.app.logger.error("class DetReport - setDname():",e)
+            self.app.logger.error("class Document - setDname():",e)
 
     def setActiveModule(self, dbconn):
         self.app.logger.info("class DetReport - setActiveModule(): "
@@ -48,7 +47,7 @@ class DetReport:
             self.app.logger.error("class DetReport - setActiveModule():",e)
 
     def setModuleCount(self, dbconn):
-        self.app.logger.info("class DetReport - setModuleCount(): "
+        self.app.logger.info("class Document - setModuleCount(): "
                             + "Fetching module counts ...")
         queries = []
         for m in self.active_module:
@@ -71,12 +70,12 @@ class DetReport:
 
             cursor.close()
         except Exception as e:
-            self.app.logger.error("class DetReport - setModuleCount(): "
+            self.app.logger.error("class Document - setModuleCount(): "
                                   + "Error fetching module count from database.")
-            self.app.logger.error("class DetReport - setModuleCount():",e)
+            self.app.logger.error("class Document - setModuleCount():",e)
 
     def setContents(self, dbconn):
-        self.app.logger.info("class DetReport - setContents(): "
+        self.app.logger.info("class Document - setContents(): "
                             + "Fetching original document contents ...")
         query = f"SELECT contents FROM doc WHERE did = {self.did}; "
         try:
@@ -86,20 +85,21 @@ class DetReport:
             self.contents = query_result[0]
             cursor.close()
         except Exception as e:
-            self.app.logger.error("class DetReport - setContents(): "
+            self.app.logger.error("class Document - setContents(): "
                                   + "Error fetching contents from database.")
-            self.app.logger.error("class DetReport - setContents():",e)
+            self.app.logger.error("class Document - setContents():",e)
 
-    def setContentsWithHighlights(self, dbconn):
-        self.app.logger.info("class DetReport - setDname(): "
-                            + "Highlighting errors on original contents ...")
-        contents = []
+    def setSentences(self, dbconn):
+        '''
+        This function initializes Sentence object for Detection Report Information.
+        Setting error information and highlighting original content part is included.
+        '''
         max_sid = 1
         columns = ["sid", "did", "osent"] + modules + ["csent"]
 
         query = f"SELECT MAX(sid) FROM sprocessing WHERE did = {self.did}; "
         try:
-            self.app.logger.info("class DetReport - setDname(): "
+            self.app.logger.info("class Document - setSentences(): "
                                 + "Fetching sentence indexes ...")
             cursor = dbconn.cursor()
             cursor.execute(query)
@@ -107,84 +107,114 @@ class DetReport:
             max_sid = query_result[0]
             cursor.close()
         except Exception as e:
-            self.app.logger.error("class DetReport - setContentsWithHighlights():",e)
+            self.app.logger.error("class Document - setSentences():",e)
 
         for i in range(1, max_sid+1, 1):
             query = f"SELECT * FROM sprocessing WHERE did = {self.did} AND sid = {i}; "
+
             try:
-                self.app.logger.info("class DetReport - setDname(): "
+                self.app.logger.info("class Document - setSentences(): "
                                     + f"Fetching sentence #{i} ...")
                 cursor = dbconn.cursor()
                 cursor.execute(query)
                 query_result = cursor.fetchall()
 
                 osent = query_result[0][columns.index("osent")]
-
-                csent = osent
-
-                # Iterate every modules columns(index 3-7)
+                sent = Sentence(self.app, self.did, i, osent)
+                error_info = {}
                 for m in modules:
-                    error_info = {}
-                    value = query_result[0][columns.index(m)]
-                    tag_st = f"<mark id='{m}'>"
-                    tag_end = "</mark>"
-
-                    # Duplication column stores different type of value
-                    if m == "dup":
-                        # Highlight whole sentence if value is 1
-                        # For duplication column, True means duplication detected
-                        if value == 1:
-                            csent = tag_st+osent+tag_end
-                    
-                    # Confirm if error value exists
-                    elif value is not None:
-                        error_info = json.loads(value)
-
-                        # Iterate error information if multiple errors from same module have been detected.
-                        for i in error_info:
-                            dvalue = error_info[i]["dvalue"]
-                            csent = csent.replace(dvalue, tag_st+dvalue+tag_end)
-
-                # Generated csent
-                print(csent)
-                contents.append(csent)
-                # TODO: update table sprocessing column csent
-
+                    error_info[m] = query_result[0][columns.index(m)]
+                sent.setErrorInfo(error_info)
+                self.sentences.append(sent)
                 cursor.close()
             except Exception as e:
-                self.app.logger.error("class DetReport - setContentsWithHighlights():",e)
-        
-        self.contents_with_highlights = "\n".join(contents)
+                self.app.logger.error("class Document - setSentences():",e)
 
-    def fetchDetReportInfo(self,dbconn):
+        for s in self.sentences:
+            s.highlightOriginalContent()
+
+    def fetchDetReportInfo(self, dbconn):
         self.setDname(dbconn)
         self.setActiveModule(dbconn)
         self.setModuleCount(dbconn)
         self.setContents(dbconn)
-        self.setContentsWithHighlights(dbconn)
+        self.setSentences(dbconn)
 
     def getDetReportInfo(self):
-        self.app.logger.info("class DetReport - getDetReportInfo(): "
+        self.app.logger.info("class Document - getDetReportInfo(): "
                             + "Detection report information has been requested.")
         info_dict = {"did": self.did,
                 "dname": self.dname,
                 "active_module": self.active_module,
                 "module_count": self.module_count,
                 "contents": self.contents,
-                "contents_with_highlights": self.contents_with_highlights}
+                "sentences": [s.getOriginalHighlightedContent() for s in self.sentences]}
         info_json = ""
         try:
             info_json = json.dumps(info_dict, ensure_ascii=False)
         except Exception as e:
-            self.app.logger.warning("class DetReport - getDetReportInfo(): "
+            self.app.logger.warning("class Document - getDetReportInfo(): "
                                   + "Json auto generation failed.")
-            self.app.logger.warning("class DetReport - getDetReportInfo(): "
+            self.app.logger.warning("class Document - getDetReportInfo(): "
                                   + "Trying to create Json result.")
             info_json = "{"
             for key, value in info_dict.items():
                 info_json += f'"{key}": "{value}",'
             info_json = info_json.rstrip(',') 
             info_json += '}'
-        self.app.logger.info("class DetReport - getDetReportInfo(): "
+        self.app.logger.info("class Document - getDetReportInfo(): "
                             + "Returning detection report information.")
         return info_json
+
+class Sentence:
+    def __init__(self, app, did, sid, original_content):
+        self.app = app                              # Flask app: used for logging
+        self.did = did                              # document id: must be given
+        self.sid = sid                              # sentence id: must be given
+        self.original_content = original_content    # original content: must be given
+        self.error_info = {}                        # error informatin for every modules
+        self.original_highlighted_content = ""      # original sentence with highlightings of detected errors
+        self.converted_content = ""                 # converted sentence
+        self.converted_highlighted_content = ""     # converted sentence with highlightings of converted parts
+
+    def setErrorInfo(self, error_info):
+        self.error_info = error_info
+    
+    def highlightOriginalContent(self):
+        '''
+        This function returns highlighted sentence with given tag.
+        '''
+        csent = self.original_content
+        
+        for m in modules:
+            error_value = self.error_info[m]
+            tag_st = f"<mark id='{m}'>"
+            tag_end = "</mark>"
+
+            # Duplication column stores different type of value
+            if m == "dup":
+                # Highlight whole sentence if value is 1
+                # For duplication column, True means duplication detected
+                if error_value == 1:
+                    csent = tag_st+self.original_content+tag_end
+
+            # Confirm if error value exists
+            elif error_value is not None:
+                error_info = json.loads(error_value)
+
+                # Iterate error information if multiple errors from same module have been detected.
+                for i in error_info:
+                    dvalue = error_info[i]["dvalue"]
+                    csent = csent.replace(dvalue, tag_st+dvalue+tag_end)
+
+        self.original_highlighted_content = csent
+    
+
+    def getOriginalContent(self):
+        return self.original_content
+
+    def getOriginalHighlightedContent(self):
+        return self.original_highlighted_content
+    
+
+    
