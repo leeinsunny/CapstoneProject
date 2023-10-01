@@ -3,12 +3,17 @@ import argparse
 import os
 
 pattern_dict = {
-    "res_num": {
-        "pattern": r"\b\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\-?\d{7}\b|\b\d{6}\d{7}\b",
+    "res_num_with_dash": {
+        "pattern": r"\b\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])-\d{7}\b",
         "type": "주민등록번호",
         "replacement": "******-*******"
     },
-    "phone_num": {
+    "res_num_without_dash": {
+        "pattern": r"\b\d{13}\b",
+        "type": "주민등록번호",
+        "replacement": "*************"
+    },
+    "phone_num_with_dash": {
         "pattern": r'010-\d{4}-\d{4}',
         "type": "전화번호",
         "replacement": "010-****-****"
@@ -19,12 +24,17 @@ pattern_dict = {
         "replacement": "010********"
     },
      "email": {
-        "pattern": r'\b[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}\b',
+        "pattern": r'\b([\w.%+-]+)@([\w.-]+\.[a-zA-Z]{2,})\b',
         "type": "이메일 주소",
-        "replacement": lambda match: '*' * (match.end() - match.start() - 1) + '@'
+        "replacement": lambda match: '*' * len(match.group(1)) + '@' + match.group(2)
     },
-    "company_num": {
-        "pattern": r'\b\d{3}-?\d{2}-?\d{5}\b',
+    "company_num_with_dash": {
+        "pattern": r'\b\d{3}-\d{2}-\d{5}\b',
+        "type": "사업자 등록번호",
+        "replacement": "***-**-*****"
+    },
+    "company_num_without_dash": {
+        "pattern": r'\b\d{10}\b',
         "type": "사업자 등록번호",
         "replacement": "**********"
     }
